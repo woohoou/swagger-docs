@@ -192,7 +192,7 @@ module Swagger
           return {apis: apis, models: models, nickname: nil} if !operation = klass.swagger_actions[action.to_sym]
           operation = Hash[operation.map {|k, v| [k.to_s.gsub("@","").to_sym, v.respond_to?(:deep_dup) ? v.deep_dup : v.dup] }] # rename :@instance hash keys
           nickname = operation[:nickname] = path_route_nickname(path, route)
-          engine_klass = engines.find{|t| puts route.defaults[:controller]+'_controller' ; (route.defaults[:controller]+'_controller').camelize.include?(t.name) }
+          engine_klass = engines.find{|t| (route.defaults[:controller]+'_controller').camelize.include?(t.name) }
           engine_mounted_path = if engine_klass != nil
             engine_klass::Engine.routes._generate_prefix({})
           else
