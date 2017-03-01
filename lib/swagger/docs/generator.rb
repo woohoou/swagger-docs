@@ -194,7 +194,15 @@ module Swagger
           nickname = operation[:nickname] = path_route_nickname(path, route)
           engine_klass = engines.find{|t| (route.defaults[:controller]+'_controller').camelize.include?(t.name) }
           engine_mounted_path = if engine_klass != nil
-            engine_klass::Engine.routes._generate_prefix({})
+            if engine_klass::Engine.routes.respond_to?(:_generate_prefix)
+              engine_klass::Engine.routes._generate_prefix({})
+            elsif engine_klass::Engine.respond_to?(:mount_point)
+              engine_klass::Engine.mount_point
+            elsif engine_klass::Engine.respond_to?(:mounted_at)
+              engine_klass::Engine.mounted_at
+            else
+              '/'+engine_klass.name.underscore
+            end
           else
             ''
           end
